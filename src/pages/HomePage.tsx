@@ -1,9 +1,23 @@
 import { useState, useEffect } from "react";
 import { Plus, Search, Loader2 } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import CommentCard from "../components/listing-card/comment-card";
+import CommentDialog from "../components/form/comment-dialog";
 import { Toaster, toast } from "sonner";
-import { getComments, deleteComment } from "../api/api";
+import {
+  getComments,
+  createComment,
+  updateComment,
+  deleteComment,
+} from "../api/api";
 import type { Comment } from "../types/types";
 
 function HomePage() {
@@ -13,6 +27,8 @@ function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterBy, setFilterBy] = useState("all");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingComment, setEditingComment] = useState<Comment | null>(null);
 
   useEffect(() => {
     fetchComments();
@@ -63,6 +79,41 @@ function HomePage() {
     setFilteredComments(filtered);
   };
 
+  const handleAddComment = async (newComment: Omit<Comment, "id">) => {
+    try {
+      const data = await createComment(newComment);
+
+      // JSONPlaceholder doesn't actually add the resource, so we'll simulate it
+      // by adding the returned data with a new ID to our local state
+      const newId = Math.max(...comments.map((c) => c.id)) + 1;
+      const commentWithNewId = { ...data, id: newId };
+
+      setComments([commentWithNewId, ...comments]);
+      setIsFormOpen(false); // Close the dialog
+      toast.success("Comment added successfully!");
+    } catch (err) {
+      toast.error("Failed to add comment. Please try again.");
+    }
+  };
+
+  const handleUpdateComment = async (updatedComment: Comment) => {
+    try {
+      await updateComment(updatedComment);
+
+      // Update locally
+      setComments(
+        comments.map((comment) =>
+          comment.id === updatedComment.id ? updatedComment : comment
+        )
+      );
+      setEditingComment(null);
+      setIsFormOpen(false); // Close the dialog
+      toast.success("Comment updated successfully!");
+    } catch (err) {
+      toast.error("Failed to update comment. Please try again.");
+    }
+  };
+
   const handleDeleteComment = async (id: number) => {
     try {
       await deleteComment(id);
@@ -76,7 +127,8 @@ function HomePage() {
   };
 
   const handleEditComment = (comment: Comment) => {
-    // editing
+    setEditingComment(comment);
+    setIsFormOpen(true);
   };
 
   return (
@@ -90,6 +142,48 @@ function HomePage() {
       </div>
 
       {/* Filters and Actions */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="relative flex-1">
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            size={18}
+          />
+          <Input
+            placeholder="Search comments..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+          />
+        </div>
+        <Select value={filterBy} onValueChange={setFilterBy}>
+          <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-800">
+            <SelectValue placeholder="Filter by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Comments</SelectItem>
+            <SelectItem value="az">Sort A-Z</SelectItem>
+            <SelectItem value="za">Sort Z-A</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button
+          onClick={() => {
+            setEditingComment(null);
+            setIsFormOpen(true);
+          }}
+          className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
+        >
+          <Plus className="mr-2 text-white" size={16} />
+          Add Comment
+        </Button>
+      </div>
+
+      {/* Comment Dialog */}
+      <CommentDialog
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        onSubmit={editingComment ? handleUpdateComment : handleAddComment}
+        initialData={editingComment}
+      />
 
       {/* Loading State */}
       {loading && (
@@ -143,7 +237,7 @@ function HomePage() {
           )}
         </>
       )}
-      <Toaster richColors position="top-right" />
+      <Toaster richColors position="bottom-right" />
     </div>
   );
 }

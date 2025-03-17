@@ -20,6 +20,28 @@ export const getComments = async (): Promise<Comment[]> => {
   }
 };
 
+// Create a new comment
+export const createComment = async (comment: NewComment): Promise<Comment> => {
+  try {
+    const response = await api.post<Comment>("/comments", comment);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    throw error;
+  }
+};
+
+// Update an existing comment
+export const updateComment = async (comment: Comment): Promise<Comment> => {
+  try {
+    const response = await api.put<Comment>(`/comments/${comment.id}`, comment);
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating comment with ID ${comment.id}:`, error);
+    throw error;
+  }
+};
+
 // Delete a comment
 export const deleteComment = async (id: number): Promise<void> => {
   try {

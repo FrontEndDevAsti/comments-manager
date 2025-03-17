@@ -1,4 +1,3 @@
-import type React from "react";
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -55,6 +54,13 @@ export default function CommentDialog({
       setFormData({
         id: 0,
         postId: 1,
+        name: "",
+        email: "",
+        body: "",
+      });
+
+      // Reset all errors when dialog opens or changes between add/edit mode
+      setErrors({
         name: "",
         email: "",
         body: "",

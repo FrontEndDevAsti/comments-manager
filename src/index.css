@@ -10,3 +10,7 @@
 body {
   font-family: "Neutra Text", sans-serif;
 }
+
+button {
+  cursor: pointer;
+}
