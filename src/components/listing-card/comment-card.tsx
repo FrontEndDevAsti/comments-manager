@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Edit2, Trash2, Mail, MessageSquare, User } from "lucide-react";
 import { Card, CardContent, CardHeader } from "../ui/card";
