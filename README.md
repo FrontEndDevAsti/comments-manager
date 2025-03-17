@@ -4,7 +4,7 @@
 A modern React application for managing comments from the JSONPlaceholder API. This project demonstrates implementing CRUD operations, filtering, sorting, and a responsive UI with clean architecture.
 ## Live Demo
 
-You can access the live demo of this project at: [Comments Manager Demo](https://comments-manager-eight.vercel.app/)
+You can access the live demo of this project at : [Comments Manager Demo](https://comments-manager-eight.vercel.app/)
 
 ##  Steps to Run the Project Locally
 
