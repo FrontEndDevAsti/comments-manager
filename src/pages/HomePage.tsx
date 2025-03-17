@@ -133,9 +133,9 @@ function HomePage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg p-6 mb-8 shadow-lg">
+      <div className="bg-gradient-to-r from-gray-800 to-gray-400 rounded-lg p-6 mb-8 shadow-lg">
         <h1 className="text-3xl font-bold text-white mb-2">Comments Manager</h1>
-        <p className="text-purple-100">
+        <p className="text-white">
           Browse, search, add, edit, and delete comments from JSONPlaceholder
           API
         </p>
